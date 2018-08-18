@@ -67,14 +67,24 @@ cope.KeyCombo.cleanChecks = function (mainKey) {
 	else if (mainKey === cope.KeyCombo.Keys.SHIFT) cope.KeyCombo.checkShift = [];
 };
 
-cope.KeyCombo.checkCombo = function (combo, mainKey, codes) {
-	if (mainKey === combo.mainKey && codes === combo.codes) {
-		if (combo.callback && {}.toString.call(combo.callback) === "[object Function]") {
-			combo.callback();
-			cope.KeyCombo.cleanChecks(mainKey);
-		}
-		else console.log("No function defined for SHIFT combo: " + combo.keys);
+cope.KeyCombo.isValidKeyCombo = function (combo, mainKey, codes) {
+	return mainKey === combo.mainKey && codes === combo.codes;
+};
+
+cope.KeyCombo.isValidComboCallback = function (combo) {
+	return combo.callback && {}.toString.call(combo.callback) === "[object Function]"
+};
+
+cope.KeyCombo.processValidKeyCombo = function (combo, mainKey) {
+	if (cope.KeyCombo.isValidComboCallback(combo)) {
+		combo.callback();
+		cope.KeyCombo.cleanChecks(mainKey);
 	}
+	else console.log("No function defined for SHIFT combo: " + combo.keys);
+};
+
+cope.KeyCombo.checkCombo = function (combo, mainKey, codes) {
+	if (cope.KeyCombo.isValidKeyCombo(combo, mainKey, codes)) cope.KeyCombo.processValidKeyCombo(combo, mainKey);
 };
 
 cope.KeyCombo.checkCombos = function (mainKey, codes) {
