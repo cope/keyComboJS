@@ -21,7 +21,7 @@ cope = {
 
 cope.KeyCombo.addCombo = function (mainKey, keyCombo, callback) {
 	if (!keyCombo) return console.log("No keys defined.");
-	if (mainKey < 1 || mainKey > 3) return console.log("Unrecognized key: " + mainKey);
+	if ([1, 2, 3].indexOf(mainKey) < 0) return console.log("Unrecognized key: " + mainKey);
 
 	var codes = [];
 	var chars = keyCombo.toUpperCase().split("");
