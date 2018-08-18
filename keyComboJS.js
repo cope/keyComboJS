@@ -21,19 +21,15 @@ cope = {
 
 cope.KeyCombo.addCombo = function (mainKey, keyCombo, callback) {
 	if (!keyCombo) return console.log("No keys defined.");
+	if (mainKey < 1 || mainKey > 3) return console.log("Unrecognized key: " + mainKey);
 
-	if (mainKey !== cope.KeyCombo.Keys.ALT &&
-		mainKey !== cope.KeyCombo.Keys.CTRL &&
-		mainKey !== cope.KeyCombo.Keys.SHIFT) {
-		return console.log("Unrecognized key: " + mainKey);
-	}
 	var codes = [];
 	var chars = keyCombo.toUpperCase().split("");
 
 	chars.forEach(function (key) {
 		codes.push(key.charCodeAt(0));
 	});
-	codes = codes.join(',');
+	codes = codes.join(",");
 
 	var found = false;    // check if exists, to override
 	cope.KeyCombo.combos.forEach(function (combo) {
@@ -65,17 +61,25 @@ cope.KeyCombo.addShiftCombo = function (keyCombo, callback) {
 	cope.KeyCombo.addCombo(cope.KeyCombo.Keys.SHIFT, keyCombo, callback);
 };
 
-cope.KeyCombo.checkCombo = function (mainKey, codes) {
-	cope.KeyCombo.combos.forEach(function (combo) {
-		if (mainKey === combo.mainKey && codes === combo.codes) {
-			if (combo.callback && {}.toString.call(combo.callback) === '[object Function]') {
-				combo.callback();
-				if (mainKey === cope.KeyCombo.Keys.ALT) cope.KeyCombo.checkAlt = [];
-				else if (mainKey === cope.KeyCombo.Keys.CTRL) cope.KeyCombo.checkCtrl = [];
-				else if (mainKey === cope.KeyCombo.Keys.SHIFT) cope.KeyCombo.checkShift = [];
-			}
-			else console.log("No function defined for SHIFT combo: " + combo.keys);
+cope.KeyCombo.cleanChecks = function (mainKey) {
+	if (mainKey === cope.KeyCombo.Keys.ALT) cope.KeyCombo.checkAlt = [];
+	else if (mainKey === cope.KeyCombo.Keys.CTRL) cope.KeyCombo.checkCtrl = [];
+	else if (mainKey === cope.KeyCombo.Keys.SHIFT) cope.KeyCombo.checkShift = [];
+};
+
+cope.KeyCombo.checkCombo = function (combo, mainKey, codes) {
+	if (mainKey === combo.mainKey && codes === combo.codes) {
+		if (combo.callback && {}.toString.call(combo.callback) === "[object Function]") {
+			combo.callback();
+			cope.KeyCombo.cleanChecks(mainKey);
 		}
+		else console.log("No function defined for SHIFT combo: " + combo.keys);
+	}
+};
+
+cope.KeyCombo.checkCombos = function (mainKey, codes) {
+	cope.KeyCombo.combos.forEach(function (combo) {
+		cope.KeyCombo.checkCombo(combo, mainKey, codes);
 	});
 };
 
@@ -87,13 +91,13 @@ document.addEventListener("keydown", function (e) {
 	if (e.keyCode !== 16 && e.keyCode !== 17 && e.keyCode !== 18) {
 		if (cope.KeyCombo.alt) {
 			cope.KeyCombo.checkAlt.push(e.keyCode);
-			cope.KeyCombo.checkCombo(cope.KeyCombo.Keys.ALT, cope.KeyCombo.checkAlt.join(','));
+			cope.KeyCombo.checkCombos(cope.KeyCombo.Keys.ALT, cope.KeyCombo.checkAlt.join(","));
 		} else if (cope.KeyCombo.ctrl) {
 			cope.KeyCombo.checkCtrl.push(e.keyCode);
-			cope.KeyCombo.checkCombo(cope.KeyCombo.Keys.CTRL, cope.KeyCombo.checkCtrl.join(','));
+			cope.KeyCombo.checkCombos(cope.KeyCombo.Keys.CTRL, cope.KeyCombo.checkCtrl.join(","));
 		} else if (cope.KeyCombo.shift) {
 			cope.KeyCombo.checkShift.push(e.keyCode);
-			cope.KeyCombo.checkCombo(cope.KeyCombo.Keys.SHIFT, cope.KeyCombo.checkShift.join(','));
+			cope.KeyCombo.checkCombos(cope.KeyCombo.Keys.SHIFT, cope.KeyCombo.checkShift.join(","));
 		}
 	} else {
 		cope.KeyCombo.checkAlt = [];
