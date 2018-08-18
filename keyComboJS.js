@@ -84,9 +84,9 @@ cope.KeyCombo.checkCombos = function (mainKey, codes) {
 };
 
 cope.KeyCombo.getKeyCode = function (e) {
-	if (e.key !== undefined) return e.key;
-	if (e.keyCode !== undefined) return e.keyCode;
-	if (e.keyIdentifier !== undefined) return e.keyIdentifier;
+	if (e.key) return e.key;
+	if (e.keyCode) return e.keyCode;
+	if (e.keyIdentifier) return e.keyIdentifier;
 	return null;
 };
 

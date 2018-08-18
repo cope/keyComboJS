@@ -1,6 +1,8 @@
 # keyComboJS
 =============
 
+[![codacy](https://img.shields.io/codacy/grade/836a871f782a49498e0b8106ddf596dd.svg)](https://www.codacy.com/project/cope/keyComboJS/dashboard)
+
 Usage:
 
 html:
