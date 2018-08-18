@@ -83,35 +83,56 @@ cope.KeyCombo.checkCombos = function (mainKey, codes) {
 	});
 };
 
-document.addEventListener("keydown", function (e) {
-	cope.KeyCombo.alt = (e.keyCode === 18) ? true : cope.KeyCombo.alt;
-	cope.KeyCombo.ctrl = (e.keyCode === 17) ? true : cope.KeyCombo.ctrl;
-	cope.KeyCombo.shift = (e.keyCode === 16) ? true : cope.KeyCombo.shift;
+cope.KeyCombo.getKeyCode = function (e) {
+	if (e.key !== undefined) return e.key;
+	if (e.keyCode !== undefined) return e.keyCode;
+	if (e.keyIdentifier !== undefined) return e.keyIdentifier;
+	return null;
+};
 
-	if (e.keyCode !== 16 && e.keyCode !== 17 && e.keyCode !== 18) {
-		if (cope.KeyCombo.alt) {
-			cope.KeyCombo.checkAlt.push(e.keyCode);
-			cope.KeyCombo.checkCombos(cope.KeyCombo.Keys.ALT, cope.KeyCombo.checkAlt.join(","));
-		} else if (cope.KeyCombo.ctrl) {
-			cope.KeyCombo.checkCtrl.push(e.keyCode);
-			cope.KeyCombo.checkCombos(cope.KeyCombo.Keys.CTRL, cope.KeyCombo.checkCtrl.join(","));
-		} else if (cope.KeyCombo.shift) {
-			cope.KeyCombo.checkShift.push(e.keyCode);
-			cope.KeyCombo.checkCombos(cope.KeyCombo.Keys.SHIFT, cope.KeyCombo.checkShift.join(","));
-		}
-	} else {
-		cope.KeyCombo.checkAlt = [];
-		cope.KeyCombo.checkCtrl = [];
-		cope.KeyCombo.checkShift = [];
-	}
-}, false);
+cope.KeyCombo.procesSpecialKeys = function (keyCode) {
+	cope.KeyCombo.alt = (keyCode === 18) ? true : cope.KeyCombo.alt;
+	cope.KeyCombo.ctrl = (keyCode === 17) ? true : cope.KeyCombo.ctrl;
+	cope.KeyCombo.shift = (keyCode === 16) ? true : cope.KeyCombo.shift;
+};
 
-document.addEventListener("keyup", function (e) {
-	cope.KeyCombo.alt = (e.keyCode === 18) ? false : cope.KeyCombo.alt;
-	cope.KeyCombo.ctrl = (e.keyCode === 17) ? false : cope.KeyCombo.ctrl;
-	cope.KeyCombo.shift = (e.keyCode === 16) ? false : cope.KeyCombo.shift;
-
+cope.KeyCombo.procesSpecialKeysChecks = function () {
 	cope.KeyCombo.checkAlt = !cope.KeyCombo.alt ? [] : cope.KeyCombo.checkAlt;
 	cope.KeyCombo.checkCtrl = !cope.KeyCombo.ctrl ? [] : cope.KeyCombo.checkCtrl;
 	cope.KeyCombo.checkShift = !cope.KeyCombo.shift ? [] : cope.KeyCombo.checkShift;
+};
+
+cope.KeyCombo.procesCheckCombos = function (keyCode) {
+	if (cope.KeyCombo.alt) {
+		cope.KeyCombo.checkAlt.push(keyCode);
+		cope.KeyCombo.checkCombos(cope.KeyCombo.Keys.ALT, cope.KeyCombo.checkAlt.join(","));
+
+	} else if (cope.KeyCombo.ctrl) {
+		cope.KeyCombo.checkCtrl.push(keyCode);
+		cope.KeyCombo.checkCombos(cope.KeyCombo.Keys.CTRL, cope.KeyCombo.checkCtrl.join(","));
+
+	} else if (cope.KeyCombo.shift) {
+		cope.KeyCombo.checkShift.push(keyCode);
+		cope.KeyCombo.checkCombos(cope.KeyCombo.Keys.SHIFT, cope.KeyCombo.checkShift.join(","));
+	}
+};
+
+cope.KeyCombo.isNewKeyCode = function (keyCode) {
+	return keyCode !== 16 && keyCode !== 17 && keyCode !== 18;
+};
+
+document.addEventListener("keydown", function (e) {
+	var keyCode = cope.KeyCombo.getKeyCode(e);
+	cope.KeyCombo.procesSpecialKeys(keyCode);
+
+	cope.KeyCombo.checkAlt = [];
+	cope.KeyCombo.checkCtrl = [];
+	cope.KeyCombo.checkShift = [];
+	if (cope.KeyCombo.isNewKeyCode(keyCode)) cope.KeyCombo.procesCheckCombos(keyCode);
+}, false);
+
+document.addEventListener("keyup", function (e) {
+	var keyCode = cope.KeyCombo.getKeyCode(e);
+	cope.KeyCombo.procesSpecialKeys(keyCode);
+	cope.KeyCombo.procesSpecialKeysChecks();
 }, false);
