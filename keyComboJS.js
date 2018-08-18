@@ -72,7 +72,7 @@ cope.KeyCombo.isValidKeyCombo = function (combo, mainKey, codes) {
 };
 
 cope.KeyCombo.isValidComboCallback = function (combo) {
-	return combo.callback && {}.toString.call(combo.callback) === "[object Function]"
+	return combo.callback && {}.toString.call(combo.callback) === "[object Function]";
 };
 
 cope.KeyCombo.processValidKeyCombo = function (combo, mainKey) {
